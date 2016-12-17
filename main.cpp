@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>//librearia incluida para guardar los archivos->agregado
 #include "position.hpp"
 #include "piece.hpp"
 #include "king.hpp"
@@ -17,11 +18,13 @@ void imprimir(Piece*** tablero);
 void chessInit(Piece*** tablero);
 int charToInt(char coordenada);
 bool ganar(Piece*** tablero);
+void saveFile(Piece*** tablero);//prototipo para guardar el archivo->agregado
 
 int main(int argc, char const *argv[]){
 	const int ROWS = 8;
 	const int COLS = 8;
 	Piece*** tablero = crearTablero(ROWS,COLS);
+	ofstream archivo;
 
 	string nombre1,nombre2;
 	cout<<"Jugador1 ingrese su nombre: "<<endl;
@@ -30,7 +33,7 @@ int main(int argc, char const *argv[]){
 	cin>>nombre2;
 	int turno=0;
 	bool gano=false;
-	char coordenada1, coordenada2;	
+	char coordenada1, coordenada2;
 	while(!gano){
 		bool valid = false;//variable de validacion
 		imprimir(tablero);
@@ -51,17 +54,22 @@ int main(int argc, char const *argv[]){
 				cout<<"Ingrese fila a la desea mover la pieza: : ";
 				cin >> coordenada2;
 				y1 = charToInt(coordenada2);
-				Position pos(x1,y1);
-				if (tablero[y][x]->getColor()=='B' && tablero[y][x] != NULL){//validacion de mover
-					if(tablero[y][x]->moveTo(tablero,pos))
-						valid = true;//variable de validacion
-					else
-						valid = false;
+				if(x < 0 || x > 8 || x1 == -1 || y1 == -1){//validacion que hace que el usuario no pueda ingresar valores fuera del rango de matriz, al igual de validacion de chars->approved by me
+					cout << "Ingreso un valor fuera del rango de la matriz" << endl;
+					valid = false;
 				}else{
-					cerr << "No se puede mover las piezas del juagdor opuesto" << endl;
+					Position pos(x1,y1);
+					if (tablero[y][x]->getColor()=='B' && tablero[y][x] != NULL){//validacion de mover
+						if(tablero[y][x]->moveTo(tablero,pos))
+							valid = true;//variable de validacion
+						else
+							valid = false;
+					}else{
+						cerr << "No se puede mover las piezas del juagdor opuesto" << endl;
+					}
 				}
+				saveFile(tablero);//lo salva automatica despues de cada turno->agregado
 			}
-
 		}else{
 			while(!valid){//ciclo de validacion
 				cout<<"Turno de: "<<nombre2<<endl;
@@ -222,4 +230,20 @@ bool ganar(Piece*** tablero){
 		return true;
 	}
 	return false;
+}
+
+void saveFile(Piece*** tablero){//metodo que sirve para poder guardar el tablero con el progress de los jugadores->agregado
+	ofstream archivo;
+	archivo.open("tablero.txt");
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (tablero[i][j] != NULL) {
+				archivo << tablero[i][j]->toString() << " ";
+			}else{
+				archivo << "- ";
+			}
+		}
+		archivo << endl;
+	}
+	archivo.close();
 }

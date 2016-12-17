@@ -16,9 +16,12 @@ bool Pawn::isValidMove(Piece*** board, Position destiny){
 	if(color == 'N'){
 		int diffX = position.getX()-destiny.getX();
 		if((diffY==1&&diffX==0) || (diffY==2&&firstMove&&diffX==0)){ //primer movimiento o movimiento hacia adelante
-			if(board[destiny.getY()][destiny.getX()] == NULL)
-				return true;
-			return false;
+			if(board[destiny.getY()][destiny.getX()] == NULL){
+				firstMove = false;//como firstmove siempre quedaba en true, nunca se validaba si era el primer turno o no, entonces se cambia a true para que lo valida->agregado
+					return true;
+			}else if(diffY==2 && firstMove == false && diffX==0){
+				return false;
+			}
 		}
 		else if((diffY==1&&diffX==1)){
 			if(board[destiny.getY()][destiny.getX()]->getColor() != color) //comer en diagonal
@@ -31,9 +34,12 @@ bool Pawn::isValidMove(Piece*** board, Position destiny){
 	} else if(color == 'B'){
 		int diffX = destiny.getX()-position.getX();
 		if((diffY==1&&diffX==0) || (diffY==2&&firstMove&&diffX==0)){ //primer movimiento o movimiento hacia adelante
-			if(board[destiny.getY()][destiny.getX()] == NULL)
+			if(board[destiny.getY()][destiny.getX()] == NULL){
+				firstMove = false;//como firstmove siempre quedaba en true, nunca se validaba si era el primer turno o no, entonces se cambia a true para que lo valida->agregado
 				return true;
-			return false;
+			}else if(diffY==2 && firstMove == false && diffX==0){
+				return false;
+			}
 		}
 		else if((diffY==1&&diffX==1)){
 			if(board[destiny.getY()][destiny.getX()]->getColor() != color) //comer en diagonal
